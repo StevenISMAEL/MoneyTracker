@@ -1,4 +1,4 @@
-package com.example.moneytracker_silarac.ui; // <--- TU PAQUETE
+package com.example.moneytracker_silarac.ui;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -12,11 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.moneytracker_silarac.R;
-import com.example.moneytracker_silarac.api.ApiClient; // Importar API
-import com.example.moneytracker_silarac.api.ExchangeRateResponse; // Importar Modelo
+import com.example.moneytracker_silarac.api.ApiClient;
+import com.example.moneytracker_silarac.api.ExchangeRateResponse;
 import com.example.moneytracker_silarac.data.Category;
 import com.example.moneytracker_silarac.data.Transaction;
-import com.example.moneytracker_silarac.utils.PrefsManager; // Importar Prefs
+import com.example.moneytracker_silarac.utils.PrefsManager;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
@@ -28,12 +28,13 @@ import retrofit2.Response;
 
 public class AddTransactionActivity extends AppCompatActivity {
 
+    public static final String EXTRA_TRANSACTION = "com.example.moneytracker.EXTRA_TRANSACTION";
+
     private AppViewModel mViewModel;
     private TextInputEditText etAmount, etDescription;
-    private EditText etForeignAmount; // Nuevo campo
-    private Spinner spinnerForeignCurrency; // Nuevo spinner
-    private Button btnConvert; // Nuevo botón
-
+    private EditText etForeignAmount;
+    private Spinner spinnerForeignCurrency;
+    private Button btnConvert;
     private RadioButton rbExpense, rbIncome;
     private Spinner spinnerCategories;
     private Button btnSave;
@@ -42,6 +43,9 @@ public class AddTransactionActivity extends AppCompatActivity {
     private List<String> categoryNames = new ArrayList<>();
     private ArrayAdapter<String> spinnerAdapter;
     private PrefsManager prefsManager;
+
+    // Variable para saber si estamos editando
+    private Transaction transactionToEdit = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,14 @@ public class AddTransactionActivity extends AppCompatActivity {
         prefsManager = new PrefsManager(this);
 
         initViews();
+
+        // Verificar si venimos a EDITAR
+        if (getIntent().hasExtra(EXTRA_TRANSACTION)) {
+            setTitle("Editar Transacción");
+            btnSave.setText("Actualizar");
+            transactionToEdit = (Transaction) getIntent().getSerializableExtra(EXTRA_TRANSACTION);
+        }
+
         setupSpinners();
         setupListeners();
     }
@@ -59,12 +71,9 @@ public class AddTransactionActivity extends AppCompatActivity {
     private void initViews() {
         etAmount = findViewById(R.id.etAmount);
         etDescription = findViewById(R.id.etDescription);
-
-        // Vistas de Conversión
         etForeignAmount = findViewById(R.id.etForeignAmount);
         spinnerForeignCurrency = findViewById(R.id.spinnerForeignCurrency);
         btnConvert = findViewById(R.id.btnConvert);
-
         rbExpense = findViewById(R.id.rbExpense);
         rbIncome = findViewById(R.id.rbIncome);
         spinnerCategories = findViewById(R.id.spinnerCategories);
@@ -72,11 +81,17 @@ public class AddTransactionActivity extends AppCompatActivity {
     }
 
     private void setupSpinners() {
-        // 1. Spinner de Categorías (BD Local)
         spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryNames);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategories.setAdapter(spinnerAdapter);
 
+        // Spinner Monedas Extranjeras
+        String[] currencies = {"USD", "EUR", "MXN", "COP", "ARS"};
+        ArrayAdapter<String> currencyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencies);
+        currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerForeignCurrency.setAdapter(currencyAdapter);
+
+        // Cargar Categorías y luego llenar datos si es edición
         mViewModel.getAllCategories().observe(this, categories -> {
             loadedCategories.clear();
             categoryNames.clear();
@@ -85,60 +100,61 @@ public class AddTransactionActivity extends AppCompatActivity {
                 categoryNames.add(c.name);
             }
             spinnerAdapter.notifyDataSetChanged();
-        });
 
-        // 2. Spinner de Monedas Extranjeras (Hardcoded para el ejemplo)
-        String[] currencies = {"USD", "EUR", "MXN", "COP", "ARS"};
-        ArrayAdapter<String> currencyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencies);
-        currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerForeignCurrency.setAdapter(currencyAdapter);
+            // Si estamos editando, llenar los campos AHORA que tenemos las categorías
+            if (transactionToEdit != null) {
+                fillDataForEdit();
+            }
+        });
+    }
+
+    private void fillDataForEdit() {
+        etAmount.setText(String.valueOf(transactionToEdit.amount));
+        etDescription.setText(transactionToEdit.description);
+
+        if ("INCOME".equals(transactionToEdit.type)) {
+            rbIncome.setChecked(true);
+        } else {
+            rbExpense.setChecked(true);
+        }
+
+        // Seleccionar la categoría correcta en el spinner
+        for (int i = 0; i < loadedCategories.size(); i++) {
+            if (loadedCategories.get(i).id == transactionToEdit.categoryId) {
+                spinnerCategories.setSelection(i);
+                break;
+            }
+        }
     }
 
     private void setupListeners() {
         btnSave.setOnClickListener(v -> saveTransaction());
-
-        // Listener para el botón CONVERTIR
         btnConvert.setOnClickListener(v -> convertCurrency());
     }
 
     private void convertCurrency() {
+        // (Tu lógica de conversión existente...)
         String foreignAmountStr = etForeignAmount.getText().toString();
-        if (foreignAmountStr.isEmpty()) {
-            Toast.makeText(this, "Ingresa un monto extranjero", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (foreignAmountStr.isEmpty()) return;
 
         double foreignAmount = Double.parseDouble(foreignAmountStr);
         String selectedForeignCurrency = spinnerForeignCurrency.getSelectedItem().toString();
-        String myBaseCurrency = prefsManager.getCurrency(); // La moneda que configuró el usuario (ej: MXN)
+        String myBaseCurrency = prefsManager.getCurrency();
 
-        // Llamada a la API
-        // Pedimos las tasas teniendo como base la moneda extranjera
-        // Ej: Si seleccionó USD, pedimos cuánto vale 1 USD en las demás monedas
         ApiClient.getService().getRates(selectedForeignCurrency).enqueue(new Callback<ExchangeRateResponse>() {
             @Override
             public void onResponse(Call<ExchangeRateResponse> call, Response<ExchangeRateResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Double rate = response.body().rates.get(myBaseCurrency);
-
                     if (rate != null) {
                         double convertedAmount = foreignAmount * rate;
                         etAmount.setText(String.format("%.2f", convertedAmount));
-                        Toast.makeText(AddTransactionActivity.this,
-                                "Tasa: 1 " + selectedForeignCurrency + " = " + rate + " " + myBaseCurrency,
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(AddTransactionActivity.this, "Moneda no encontrada en API", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddTransactionActivity.this, "Conversión realizada", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(AddTransactionActivity.this, "Error en API", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
-            public void onFailure(Call<ExchangeRateResponse> call, Throwable t) {
-                Toast.makeText(AddTransactionActivity.this, "Fallo de red: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+            public void onFailure(Call<ExchangeRateResponse> call, Throwable t) {}
         });
     }
 
@@ -158,12 +174,25 @@ public class AddTransactionActivity extends AppCompatActivity {
         if (selectedPosition == -1) return;
         int categoryId = loadedCategories.get(selectedPosition).id;
 
-        Transaction transaction = new Transaction(
-                type, amount, categoryId, description, System.currentTimeMillis(), "Efectivo"
-        );
+        if (transactionToEdit == null) {
+            // MODO CREAR: Nueva transacción
+            Transaction transaction = new Transaction(
+                    type, amount, categoryId, description, System.currentTimeMillis(), "Efectivo"
+            );
+            mViewModel.insertTransaction(transaction);
+            Toast.makeText(this, "Guardado!", Toast.LENGTH_SHORT).show();
+        } else {
+            // MODO EDITAR: Actualizar datos de la existente
+            transactionToEdit.amount = amount;
+            transactionToEdit.description = description;
+            transactionToEdit.type = type;
+            transactionToEdit.categoryId = categoryId;
+            // No cambiamos la fecha original al editar
 
-        mViewModel.insertTransaction(transaction);
-        Toast.makeText(this, "Guardado!", Toast.LENGTH_SHORT).show();
+            mViewModel.updateTransaction(transactionToEdit);
+            Toast.makeText(this, "Actualizado!", Toast.LENGTH_SHORT).show();
+        }
+
         finish();
     }
 }

@@ -24,6 +24,18 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     private List<Transaction> transactions = new ArrayList<>();
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
+    // 1. Definir la interfaz del Listener
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(Transaction transaction);
+    }
+
+    // 2. Método para asignar el listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
         notifyDataSetChanged();
@@ -41,19 +53,16 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
         Transaction current = transactions.get(position);
 
-        // Configurar Textos
-        // Nota: En una versión avanzada, buscaríamos el nombre real de la categoría usando el ID
         holder.tvCategoryName.setText("Cat ID: " + current.categoryId);
         holder.tvDescription.setText(current.description);
         holder.tvDate.setText(dateFormat.format(new Date(current.date)));
 
-        // Formatear Monto y Color
         if (current.type.equals("INCOME")) {
             holder.tvAmount.setText("+ $" + String.format("%.2f", current.amount));
-            holder.tvAmount.setTextColor(Color.parseColor("#4CAF50")); // Verde
+            holder.tvAmount.setTextColor(Color.parseColor("#4CAF50"));
         } else {
             holder.tvAmount.setText("- $" + String.format("%.2f", current.amount));
-            holder.tvAmount.setTextColor(Color.parseColor("#F44336")); // Rojo
+            holder.tvAmount.setTextColor(Color.parseColor("#F44336"));
         }
     }
 
@@ -73,6 +82,14 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             tvAmount = itemView.findViewById(R.id.tvAmount);
             tvDate = itemView.findViewById(R.id.tvDate);
             imgIcon = itemView.findViewById(R.id.imgCategoryIcon);
+
+            // 3. Configurar el clic en la tarjeta completa
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(transactions.get(position));
+                }
+            });
         }
     }
 }

@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permiso de Internet (Importante para más adelante) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -16,7 +15,6 @@
         android:theme="@style/Theme.MoneyTracker_silarac"
         tools:targetApi="31">
 
-        <!-- 1. Pantalla de Configuración (INICIO) -->
         <activity
             android:name=".ui.SetupActivity"
             android:exported="true">
@@ -26,19 +24,23 @@
             </intent-filter>
         </activity>
 
-        <!-- 2. Dashboard Principal -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="false" />
 
-        <!-- 3. Pantalla de Agregar Transacción (NUEVA) -->
-        <!-- ESTO ES LO QUE FALTABA -->
         <activity
             android:name=".ui.AddTransactionActivity"
             android:parentActivityName=".ui.MainActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.StatisticsActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:exported="false" />
+
+        <!-- ¡ESTO ES LO QUE TE FALTA POSIBLEMENTE! -->
+        <activity
+            android:name=".ui.SettingsActivity"
             android:parentActivityName=".ui.MainActivity"
             android:exported="false" />
 

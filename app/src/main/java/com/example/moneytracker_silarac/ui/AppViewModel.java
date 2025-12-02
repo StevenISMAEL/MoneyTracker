@@ -45,5 +45,9 @@ public class AppViewModel extends AndroidViewModel {
     // --- ESCRITURA ---
     public void insertTransaction(Transaction transaction) { mRepository.insertTransaction(transaction); }
     public void deleteTransaction(Transaction transaction) { mRepository.deleteTransaction(transaction); }
+    // AGREGA ESTE MÉTODO:
+    public void updateTransaction(Transaction transaction) { mRepository.updateTransaction(transaction); }
     public void insertCategory(Category category) { mRepository.insertCategory(category); }
+
+
 }

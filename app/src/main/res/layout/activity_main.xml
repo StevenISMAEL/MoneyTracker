@@ -12,7 +12,36 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- HEADER: Tarjeta de Resumen Financiero -->
+        <!-- 1. NUEVA BARRA SUPERIOR (Título y Ajustes) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:background="@android:color/white"
+            android:elevation="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mi Billetera"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
+
+            <ImageButton
+                android:id="@+id/btnSettings"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_menu_preferences"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Ajustes"
+                app:tint="@color/black"/>
+        </LinearLayout>
+
+        <!-- 2. HEADER: Tarjeta de Resumen Financiero -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,7 +119,48 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- NUEVO: Botón de Estadísticas -->
+        <!-- 3. SECCIÓN DE PRESUPUESTO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Presupuesto Mensual"
+                    android:textSize="12sp"
+                    android:textColor="#757575"/>
+
+                <TextView
+                    android:id="@+id/tvBudgetStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0% gastado"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBarBudget"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:max="100"
+                android:progress="0"/>
+        </LinearLayout>
+
+        <!-- 4. Botón de Estadísticas -->
         <Button
             android:id="@+id/btnViewStats"
             android:layout_width="match_parent"
@@ -102,7 +172,7 @@
             android:textColor="@color/design_default_color_primary"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
-        <!-- Título de la Lista -->
+        <!-- 5. Título de la Lista -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -112,7 +182,7 @@
             android:textStyle="bold"
             android:textColor="@color/black"/>
 
-        <!-- LISTA DE TRANSACCIONES -->
+        <!-- 6. LISTA DE TRANSACCIONES -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerTransactions"
             android:layout_width="match_parent"
@@ -122,6 +192,7 @@
 
     </LinearLayout>
 
+    <!-- 7. BOTÓN FLOTANTE (FAB) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="wrap_content"

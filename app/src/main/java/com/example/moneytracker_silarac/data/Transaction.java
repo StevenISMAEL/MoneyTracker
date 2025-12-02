@@ -1,8 +1,9 @@
-package com.example.moneytracker_silarac.data; // <--- CORREGIDO
+package com.example.moneytracker_silarac.data;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+import java.io.Serializable; // <--- IMPORTAR ESTO
 
 @Entity(
         tableName = "transactions",
@@ -13,10 +14,12 @@ import androidx.room.PrimaryKey;
                 onDelete = ForeignKey.SET_NULL
         )
 )
-public class Transaction {
+// AGREGAR "implements Serializable" AQUÍ ABAJO
+public class Transaction implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
+    // ... (El resto de tus campos siguen igual)
     public String type;
     public double amount;
     public int categoryId;
