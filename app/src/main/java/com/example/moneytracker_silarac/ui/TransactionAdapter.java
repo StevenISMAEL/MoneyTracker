@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneytracker_silarac.R;
+import com.example.moneytracker_silarac.data.Category; // Importar Category
 import com.example.moneytracker_silarac.data.Transaction;
 
 import java.text.SimpleDateFormat;
@@ -22,22 +23,27 @@ import java.util.Locale;
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder> {
 
     private List<Transaction> transactions = new ArrayList<>();
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    private List<Category> categories = new ArrayList<>(); // NUEVO: Lista de categorías
 
-    // 1. Definir la interfaz del Listener
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(Transaction transaction);
     }
 
-    // 2. Método para asignar el listener
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
+        notifyDataSetChanged();
+    }
+
+    // NUEVO: Método para recibir las categorías desde MainActivity
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
         notifyDataSetChanged();
     }
 
@@ -53,7 +59,30 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
         Transaction current = transactions.get(position);
 
-        holder.tvCategoryName.setText("Cat ID: " + current.categoryId);
+        // --- CAMBIO PRINCIPAL: Buscar el nombre de la categoría ---
+        String categoryName = "Desconocido";
+        String categoryColor = "#000000"; // Color por defecto
+
+        // Buscamos en la lista de categorías cuál coincide con el ID
+        for (Category cat : categories) {
+            if (cat.id == current.categoryId) {
+                categoryName = cat.name;
+                categoryColor = cat.color;
+                break;
+            }
+        }
+
+        // Mostrar Nombre en lugar de ID
+        holder.tvCategoryName.setText(categoryName);
+
+        // Opcional: Cambiar color del icono según la categoría
+        try {
+            holder.imgIcon.setColorFilter(Color.parseColor(categoryColor));
+        } catch (Exception e) {
+            holder.imgIcon.setColorFilter(Color.GRAY);
+        }
+        // -----------------------------------------------------------
+
         holder.tvDescription.setText(current.description);
         holder.tvDate.setText(dateFormat.format(new Date(current.date)));
 
@@ -83,7 +112,6 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             tvDate = itemView.findViewById(R.id.tvDate);
             imgIcon = itemView.findViewById(R.id.imgCategoryIcon);
 
-            // 3. Configurar el clic en la tarjeta completa
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {

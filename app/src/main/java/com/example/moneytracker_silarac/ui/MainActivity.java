@@ -5,7 +5,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.ImageButton; // Importar ImageButton
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
         prefsManager = new PrefsManager(this);
 
-        // --- VINCULACIÓN DE VISTAS ---
         tvTotalBalance = findViewById(R.id.tvTotalBalance);
         tvTotalIncome = findViewById(R.id.tvTotalIncome);
         tvTotalExpense = findViewById(R.id.tvTotalExpense);
@@ -51,48 +50,50 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fabAdd);
         RecyclerView recyclerView = findViewById(R.id.recyclerTransactions);
 
-        // BOTÓN AJUSTES (NUEVO)
         ImageButton btnSettings = findViewById(R.id.btnSettings);
         btnSettings.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
 
-        // BOTÓN ESTADÍSTICAS
         Button btnStats = findViewById(R.id.btnViewStats);
         btnStats.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, StatisticsActivity.class);
             startActivity(intent);
         });
 
-        // --- CONFIGURACIÓN LISTA ---
         adapter = new TransactionAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // Click para Editar
         adapter.setOnItemClickListener(transaction -> {
             Intent intent = new Intent(MainActivity.this, AddTransactionActivity.class);
             intent.putExtra(AddTransactionActivity.EXTRA_TRANSACTION, transaction);
             startActivity(intent);
         });
 
-        // --- CONFIGURACIÓN DATOS ---
         mViewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
+        // --- OBSERVADORES ---
+
+        // 1. Observar Transacciones (Como antes)
         mViewModel.getAllTransactions().observe(this, transactions -> {
             currentList = transactions;
             adapter.setTransactions(transactions);
             calculateBalance(transactions);
         });
 
-        // --- BOTÓN AGREGAR ---
+        // 2. NUEVO: Observar Categorías y pasarlas al adaptador
+        mViewModel.getAllCategories().observe(this, categories -> {
+            adapter.setCategories(categories);
+        });
+        // ----------------------------------------------------
+
         fab.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, AddTransactionActivity.class);
             startActivity(intent);
         });
 
-        // --- SWIPE TO DELETE ---
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
