@@ -1,6 +1,5 @@
 package com.example.moneytracker_silarac.ui;
 
-
 import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -26,7 +25,6 @@ public class AppViewModel extends AndroidViewModel {
         mAllCategories = mRepository.getAllCategories();
     }
 
-    // --- LECTURA ---
     public LiveData<List<Transaction>> getAllTransactions() { return mAllTransactions; }
     public LiveData<List<Category>> getAllCategories() { return mAllCategories; }
 
@@ -42,12 +40,14 @@ public class AppViewModel extends AndroidViewModel {
         return mRepository.getCategoryTotals(type, start, end);
     }
 
-    // --- ESCRITURA ---
+    // --- IMPORTANTE: ASEGÚRATE DE TENER ESTE MÉTODO ---
+    public LiveData<List<Transaction>> getTransactionsByFilter(long start, long end, String type) {
+        return mRepository.getTransactionsByFilter(start, end, type);
+    }
+    // --------------------------------------------------
+
     public void insertTransaction(Transaction transaction) { mRepository.insertTransaction(transaction); }
-    public void deleteTransaction(Transaction transaction) { mRepository.deleteTransaction(transaction); }
-    // AGREGA ESTE MÉTODO:
     public void updateTransaction(Transaction transaction) { mRepository.updateTransaction(transaction); }
+    public void deleteTransaction(Transaction transaction) { mRepository.deleteTransaction(transaction); }
     public void insertCategory(Category category) { mRepository.insertCategory(category); }
-
-
 }
