@@ -17,14 +17,13 @@
             android:textStyle="bold"
             android:layout_marginBottom="24dp"/>
 
-        <!-- Tipo: Ingreso o Gasto -->
+        <!-- Tipo -->
         <RadioGroup
             android:id="@+id/rgType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="16dp">
-
             <RadioButton
                 android:id="@+id/rbExpense"
                 android:layout_width="0dp"
@@ -32,7 +31,6 @@
                 android:layout_weight="1"
                 android:text="Gasto"
                 android:checked="true"/>
-
             <RadioButton
                 android:id="@+id/rbIncome"
                 android:layout_width="0dp"
@@ -41,11 +39,11 @@
                 android:text="Ingreso"/>
         </RadioGroup>
 
-        <!-- Monto -->
+        <!-- Monto Principal -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Monto"
+            android:hint="Monto (en tu moneda)"
             android:layout_marginBottom="16dp">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etAmount"
@@ -54,11 +52,63 @@
                 android:inputType="numberDecimal"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- SECCIÓN API: Conversor de Moneda -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#E3F2FD"
+            app:cardCornerRadius="8dp"
+            app:contentPadding="12dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¿Gasto en moneda extranjera?"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <EditText
+                        android:id="@+id/etForeignAmount"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:hint="Monto Ext."
+                        android:inputType="numberDecimal"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerForeignCurrency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="8dp"/>
+
+                    <Button
+                        android:id="@+id/btnConvert"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Convertir"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <!-- Descripción -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Descripción (Opcional)"
+            android:hint="Descripción"
             android:layout_marginBottom="16dp">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etDescription"
@@ -67,7 +117,7 @@
                 android:inputType="textCapSentences"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Selección de Categoría -->
+        <!-- Categoría -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -84,7 +134,7 @@
             android:id="@+id/btnSaveTransaction"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="Guardar"
+            android:text="Guardar Transacción"
             android:layout_marginTop="16dp"/>
 
     </LinearLayout>
