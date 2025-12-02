@@ -2,14 +2,17 @@ package com.example.moneytracker_silarac.ui; // <--- TU PAQUETE CORRECTO
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button; // Importar Button
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-// Importaciones de TU proyecto (asegúrate que digan moneytracker_silarac)
 import com.example.moneytracker_silarac.R;
 import com.example.moneytracker_silarac.data.Transaction;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -21,13 +24,14 @@ public class MainActivity extends AppCompatActivity {
     private AppViewModel mViewModel;
     private TextView tvTotalBalance, tvTotalIncome, tvTotalExpense;
     private TransactionAdapter adapter;
+    private List<Transaction> currentList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // Usamos el layout del Dashboard
+        setContentView(R.layout.activity_main);
 
-        // 1. Vincular Vistas (TextViews del resumen y lista)
+        // 1. Vincular Vistas
         tvTotalBalance = findViewById(R.id.tvTotalBalance);
         tvTotalIncome = findViewById(R.id.tvTotalIncome);
         tvTotalExpense = findViewById(R.id.tvTotalExpense);
@@ -35,33 +39,52 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fabAdd);
         RecyclerView recyclerView = findViewById(R.id.recyclerTransactions);
 
-        // 2. Configurar RecyclerView (La lista de movimientos)
+        // --- NUEVO: Botón de Estadísticas ---
+        Button btnStats = findViewById(R.id.btnViewStats);
+        btnStats.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, StatisticsActivity.class);
+            startActivity(intent);
+        });
+        // ------------------------------------
+
+        // 2. Configurar RecyclerView
         adapter = new TransactionAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // 3. Configurar ViewModel (Conexión con la Base de Datos)
+        // 3. Configurar ViewModel
         mViewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
-        // 4. Observar cambios en las Transacciones
-        // Cada vez que agregues o borres algo, este código se ejecutará automáticamente.
+        // 4. Observar cambios
         mViewModel.getAllTransactions().observe(this, transactions -> {
-            // A) Actualizar la lista visual
+            currentList = transactions;
             adapter.setTransactions(transactions);
-
-            // B) Recalcular los números del balance (Ingresos vs Gastos)
             calculateBalance(transactions);
         });
 
-        // 5. Configurar Botón Agregar (+)
-        // Esto abre la pantalla de formulario
+        // 5. Configurar FAB
         fab.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, AddTransactionActivity.class);
             startActivity(intent);
         });
+
+        // 6. Swipe to Delete
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                Transaction transactionToDelete = currentList.get(position);
+                mViewModel.deleteTransaction(transactionToDelete);
+                Toast.makeText(MainActivity.this, "Transacción eliminada", Toast.LENGTH_SHORT).show();
+            }
+        }).attachToRecyclerView(recyclerView);
     }
 
-    // Método auxiliar para sumar ingresos y gastos
     private void calculateBalance(List<Transaction> transactions) {
         double income = 0;
         double expense = 0;
@@ -76,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
         double balance = income - expense;
 
-        // Mostrar los textos formateados con 2 decimales
         tvTotalIncome.setText(String.format("+ $%.2f", income));
         tvTotalExpense.setText(String.format("- $%.2f", expense));
         tvTotalBalance.setText(String.format("$%.2f", balance));

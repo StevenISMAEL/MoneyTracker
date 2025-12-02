@@ -37,6 +37,10 @@
             android:name=".ui.AddTransactionActivity"
             android:parentActivityName=".ui.MainActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.StatisticsActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:exported="false" />
 
     </application>
 
