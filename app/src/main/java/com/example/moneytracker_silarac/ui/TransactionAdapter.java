@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneytracker_silarac.R;
-import com.example.moneytracker_silarac.data.Category; // Importar Category
+import com.example.moneytracker_silarac.data.Category;
 import com.example.moneytracker_silarac.data.Transaction;
 
 import java.text.SimpleDateFormat;
@@ -23,7 +23,7 @@ import java.util.Locale;
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder> {
 
     private List<Transaction> transactions = new ArrayList<>();
-    private List<Category> categories = new ArrayList<>(); // NUEVO: Lista de categorías
+    private List<Category> categories = new ArrayList<>();
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     private OnItemClickListener listener;
@@ -59,11 +59,9 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
         Transaction current = transactions.get(position);
 
-        // --- CAMBIO PRINCIPAL: Buscar el nombre de la categoría ---
         String categoryName = "Desconocido";
-        String categoryColor = "#000000"; // Color por defecto
+        String categoryColor = "#000000";
 
-        // Buscamos en la lista de categorías cuál coincide con el ID
         for (Category cat : categories) {
             if (cat.id == current.categoryId) {
                 categoryName = cat.name;
@@ -72,16 +70,13 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             }
         }
 
-        // Mostrar Nombre en lugar de ID
         holder.tvCategoryName.setText(categoryName);
 
-        // Opcional: Cambiar color del icono según la categoría
         try {
             holder.imgIcon.setColorFilter(Color.parseColor(categoryColor));
         } catch (Exception e) {
             holder.imgIcon.setColorFilter(Color.GRAY);
         }
-        // -----------------------------------------------------------
 
         holder.tvDescription.setText(current.description);
         holder.tvDate.setText(dateFormat.format(new Date(current.date)));

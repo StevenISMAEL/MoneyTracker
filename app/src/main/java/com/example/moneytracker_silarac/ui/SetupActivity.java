@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.moneytracker_silarac.R; // Asegúrate de que R se importe de TU paquete
+import com.example.moneytracker_silarac.R;
 import com.example.moneytracker_silarac.utils.PrefsManager;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -70,12 +70,10 @@ public class SetupActivity extends AppCompatActivity {
     }
 
     private void goToMain() {
-        // AQUÍ INICIAREMOS LA MAIN ACTIVITY (La crearemos en el siguiente paso)
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
 
-        // TEMPORAL: Solo para probar que funciona esta pantalla
         Toast.makeText(this, "Configuración Guardada. Listo para ir al Dashboard", Toast.LENGTH_LONG).show();
     }
 }

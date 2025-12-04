@@ -44,7 +44,7 @@ public class AddTransactionActivity extends AppCompatActivity {
     private ArrayAdapter<String> spinnerAdapter;
     private PrefsManager prefsManager;
 
-    // Variable para saber si estamos editando
+
     private Transaction transactionToEdit = null;
 
     @Override
@@ -85,7 +85,7 @@ public class AddTransactionActivity extends AppCompatActivity {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategories.setAdapter(spinnerAdapter);
 
-        // Spinner Monedas Extranjeras
+
         String[] currencies = {"USD", "EUR", "MXN", "COP", "ARS"};
         ArrayAdapter<String> currencyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencies);
         currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -133,7 +133,6 @@ public class AddTransactionActivity extends AppCompatActivity {
     }
 
     private void convertCurrency() {
-        // (Tu lógica de conversión existente...)
         String foreignAmountStr = etForeignAmount.getText().toString();
         if (foreignAmountStr.isEmpty()) return;
 

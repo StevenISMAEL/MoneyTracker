@@ -11,7 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.moneytracker_silarac.R;
-import com.example.moneytracker_silarac.data.AppDatabase; // Importar BD
+import com.example.moneytracker_silarac.data.AppDatabase;
 import com.example.moneytracker_silarac.utils.PrefsManager;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -75,7 +75,7 @@ public class SettingsActivity extends AppCompatActivity {
         prefsManager.saveProfile(name, Float.parseFloat(budgetStr), currency);
         Toast.makeText(this, "Ajustes guardados", Toast.LENGTH_SHORT).show();
 
-        // Reiniciar MainActivity para reflejar cambios (ej: presupuesto)
+        // Reiniciar MainActivity para reflejar cambios
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

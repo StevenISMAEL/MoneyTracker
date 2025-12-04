@@ -1,4 +1,4 @@
-package com.example.moneytracker_silarac.data; // <--- CORREGIDO
+package com.example.moneytracker_silarac.data;
 
 public class CategoryTotal {
     public String categoryName;

@@ -37,7 +37,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private PieChart pieChart;
     private BarChart barChart; // Historial Diario
-    private BarChart barChartCategories; // Comparativa por Categoría (NUEVO)
+    private BarChart barChartCategories;
     private AppViewModel mViewModel;
 
     // Vistas de Tarjetas
@@ -96,7 +96,6 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void loadStatistics() {
         long now = System.currentTimeMillis();
-        // Asumimos consulta desde el principio de los tiempos (0) hasta hoy
 
         // 1. Cargar Datos para el PIE CHART, BAR CHART CATEGORIAS y la TARJETA de "Mayor Gasto"
         mViewModel.getCategoryTotals("EXPENSE", 0, now).observe(this, categoryTotals -> {
@@ -147,7 +146,6 @@ public class StatisticsActivity extends AppCompatActivity {
         pieChart.invalidate();
     }
 
-    // NUEVO MÉTODO: Actualizar gráfico de barras por categoría
     private void updateCategoryBarChart(List<CategoryTotal> categoryTotals) {
         List<BarEntry> entries = new ArrayList<>();
         List<String> labels = new ArrayList<>();

@@ -76,18 +76,17 @@ public class MainActivity extends AppCompatActivity {
 
         // --- OBSERVADORES ---
 
-        // 1. Observar Transacciones (Como antes)
+        // 1. Observar Transacciones
         mViewModel.getAllTransactions().observe(this, transactions -> {
             currentList = transactions;
             adapter.setTransactions(transactions);
             calculateBalance(transactions);
         });
 
-        // 2. NUEVO: Observar Categorías y pasarlas al adaptador
+        // Observar Categorías y pasarlas al adaptador
         mViewModel.getAllCategories().observe(this, categories -> {
             adapter.setCategories(categories);
         });
-        // ----------------------------------------------------
 
         fab.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, AddTransactionActivity.class);

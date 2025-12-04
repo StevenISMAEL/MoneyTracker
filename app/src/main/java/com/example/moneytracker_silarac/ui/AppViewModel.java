@@ -40,11 +40,9 @@ public class AppViewModel extends AndroidViewModel {
         return mRepository.getCategoryTotals(type, start, end);
     }
 
-    // --- IMPORTANTE: ASEGÚRATE DE TENER ESTE MÉTODO ---
     public LiveData<List<Transaction>> getTransactionsByFilter(long start, long end, String type) {
         return mRepository.getTransactionsByFilter(start, end, type);
     }
-    // --------------------------------------------------
 
     public void insertTransaction(Transaction transaction) { mRepository.insertTransaction(transaction); }
     public void updateTransaction(Transaction transaction) { mRepository.updateTransaction(transaction); }
